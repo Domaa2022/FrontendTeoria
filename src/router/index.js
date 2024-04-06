@@ -1,25 +1,56 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHashHistory } from "vue-router";
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView
+    path: "/",
+    name: "landingpage",
+    component: () =>
+      import(/* webpackChunkName: "landingpage" */ "../views/LandingPage.vue"),
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
-]
+    path: "/help",
+    name: "help",
+    component: () => import(/* webpackChunkName: "Help" */ "../views/Help.vue"),
+  },
+  {
+    path: "/expectedEntries",
+    name: "expectedEntries",
+    component: () =>
+      import(
+        /* webpackChunkName: "ExpectedEntries" */ "../views/ExpectedEntries.vue"
+      ),
+  },
+  {
+    path: "/simulator",
+    name: "simulator",
+    component: () =>
+      import(/* webpackChunkName: "Simulator" */ "../views/Simulator.vue"),
+  },
+  {
+    path: "/seeprojects",
+    name: "seeprojects",
+    component: () =>
+      import(/* webpackChunkName: "SeeProjects" */ "../views/SeeProjects.vue"),
+  },
+  {
+    path: "/compareprojects",
+    name: "compareprojects",
+    component: () =>
+      import(
+        /* webpackChunkName: "CompareProjects" */ "../views/CompareProjects.vue"
+      ),
+  },
+  {
+    path: "/results",
+    name: " results",
+    component: () =>
+      import(/* webpackChunkName: "Results" */ "../views/Results.vue"),
+  },
+];
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;
