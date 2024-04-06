@@ -185,19 +185,19 @@ const iniciarSimulacion = async () => {
                     {
                         label: "Output por trabajador ($y = k^α$)",
                         data: yValues,
-                        borderColor: "blue",
+                        borderColor: "orange",
                         fill: false,
                     },
                     {
                         label: "Inversión por trabajador ($s cdot y$)",
                         data: iValues,
-                        borderColor: "green",
+                        borderColor: "purple",
                         fill: false,
                     },
                     {
                         label: "Depreciación efectiva por trabajador ($[n + g + d] cdot k$)",
                         data: depValues,
-                        borderColor: "red",
+                        borderColor: "yellow",
                         borderDash: [5, 5],
                         fill: false,
                     },
