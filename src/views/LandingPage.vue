@@ -20,20 +20,25 @@
 
             <v-container>
                 <v-row>
-                    <v-col cols="4" id='Buttons'>
+                    <v-col cols="3" id='Buttons'>
                         <router-link to="/simulator">
                             <v-btn height="70" width="300" color="#80A1C1" dark>Iniciar
                             </v-btn></router-link>
 
                     </v-col>
-                    <v-col cols="4" id='Buttons'>
+                    <v-col cols="3" id='Buttons'>
                         <router-link to="/help">
                             <v-btn height="70" width="300" color="#80A1C1" dark> Ayuda
                             </v-btn></router-link>
                     </v-col>
-                    <v-col cols="4" id='Buttons'>
+                    <v-col cols="3" id='Buttons'>
                         <router-link to="/seeprojects">
                             <v-btn height="70" width="300" color="#80A1C1" dark>Ver Proyectos
+                            </v-btn></router-link>
+                    </v-col>
+                    <v-col cols="3" id='Buttons'>
+                        <router-link to="/deleteproyects">
+                            <v-btn height="70" width="300" color="#80A1C1" dark>Eliminar Proyectos
                             </v-btn></router-link>
                     </v-col>
                 </v-row>

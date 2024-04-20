@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
+import Results from "../views/Results.vue";
 
 const routes = [
   {
@@ -27,6 +28,12 @@ const routes = [
       import(/* webpackChunkName: "Simulator" */ "../views/Simulator.vue"),
   },
   {
+    path: "/simulator2",
+    name: "simulator2",
+    component: () =>
+      import(/* webpackChunkName: "Simulator" */ "../views/Simulator2.vue"),
+  },
+  {
     path: "/seeprojects",
     name: "seeprojects",
     component: () =>
@@ -41,11 +48,28 @@ const routes = [
       ),
   },
   {
+    path: "/compareprojects2",
+    name: "compareprojects2",
+    component: () =>
+      import(
+        /* webpackChunkName: "CompareProjects" */ "../views/CompareProjects2.vue"
+      ),
+  },
+  {
     path: "/results",
     name: " results",
     component: () =>
       import(/* webpackChunkName: "Results" */ "../views/Results.vue"),
   },
+  {
+    path: "/deleteproyects",
+    name: "deleteproyects",
+    component: () =>
+      import(
+        /* webpackChunkName: "DeleteProyects" */ "../views/DeleteProyects.vue"
+      ),
+  }
+  
 ];
 
 const router = createRouter({

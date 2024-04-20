@@ -26,36 +26,17 @@
                     </v-col>
                     
                 </v-row>
-
-                <v-row id="contendorProyectos">
-                    <v-col cols="12">
-                        <h3>Seleccione otro proyecto</h3>
-                    </v-col>
-                    
-                    <v-col cols="12">
-                        <v-select v-model="seleccionado2" label="Select"
-                            :items="proyectos2">
-                        </v-select>
-                    </v-col>
-                    
-                </v-row>
-
-
             </v-container>
 
             <v-container>
                 <v-row>
                     <v-col cols="6" id="Buttons">
-                        <router-link to="/compareprojects2">
-                            <v-btn height="70" width="300" color="#80A1C1" dark @click="compareProyectosGuardar()" >
-                                COMPARAR PROYECTOS
+                        <v-btn height="70" width="300" color="#80A1C1" dark @click="eliminarProyecto()">ELIMINAR PROYECTO
                             </v-btn>
-                        </router-link>
                     </v-col>
                     <v-col cols="6" id="Buttons">
                         <router-link to="/">
-                            <v-btn height="70" width="300" color="#80A1C1" dark>SALIR 
-
+                            <v-btn height="70" width="300" color="#80A1C1" dark>Salir
                             </v-btn></router-link>
                     </v-col>
                 </v-row>
@@ -69,9 +50,12 @@ import { useRouter } from 'vue-router'
 
 const proyectos = ref([])
 const seleccionado = ref('')
-const seleccionado2 = ref('')
-const proyectos2 = ref([])
+
 const router = useRouter()
+
+
+
+
 
 onMounted(async () => {
     try {
@@ -93,15 +77,32 @@ onMounted(async () => {
     }
 })
 
-watch(seleccionado, () => {
-    proyectos2.value = proyectos.value.filter(proyecto => proyecto !== seleccionado.value)
-})
+const eliminarProyecto = async () => {
 
+    //Enviar una alerta para confirmar la eliminación
+    if (confirm("¿Está seguro de que desea eliminar el proyecto?")) {
+        const params = {
+            nombre: seleccionado.value
+        }
+        const queryString = new URLSearchParams(params).toString()
+        const url = `http://localhost:3000/Simulador/deletesimulacion?${queryString}`;
 
-const compareProyectosGuardar = () => {
-    localStorage.setItem('proyecto1', seleccionado.value)
-    localStorage.setItem('proyecto2', seleccionado2.value)
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+            })
+            const data = await res.json()
+            if( res.status === 200){
+                alert("Proyecto eliminado correctamente")
+            }
+            router.push('/')
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 }
+
 
 
 

@@ -49,16 +49,10 @@
 
                 <v-container>
                     <v-row>
-                        <v-col cols="4" id='Buttons'>
-                            <v-btn id="iniciar" height="70" width="500" color="#80A1C1" dark @click="iniciarSimulacion()">INICIAR</v-btn>   
-                        </v-col>
-                        <v-col cols="4" id='Buttons'>
+                        <v-col cols="12" id='Buttons'>
                             <router-link to="/">
                                 <v-btn height="70" width="500" color="#80A1C1" dark>
                                     CANCELAR</v-btn></router-link>
-                        </v-col>
-                        <v-col cols="4" id="Buttons">
-                            <v-btn id="guardar" style="display: none;" height="70" width="500" color="#80A1C1" dark @click="guardarSimulacion()">GUARDAR </v-btn>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -66,13 +60,13 @@
 
             </v-container>
 
-            <v-container >
+            <v-container>
                 <v-container style="display: flex ; justify-content: space-evenly;">
                     <span id="label1" class="label success">Output por trabajador</span>
-                    <span id="label2"class="label info">Inversión por trabajador</span>
+                    <span id="label2" class="label info">Inversión por trabajador</span>
                     <span id="label3" class="label warning">Depreciación efectiva por trabajador</span>
                 </v-container>
-                
+
                 <v-container class="flex-center" style="display: flex;justify-content: center; align-items: center;">
                     <canvas style="display: block;" height="400" width="400" id="myChart"></canvas>
                     <canvas style="display: none;" height="400" width="400" id="myChart2"></canvas>
@@ -108,114 +102,84 @@ let tasaProgresoTecnologico = ref(null);
 let coeficienteElasticidad = ref(null);
 
 // Grafico inicial 
-onMounted(() => {
-    const y = (k) => Math.pow(k, alpha); // Output por trabajador
-    const i = (k) => s * y(k); // Inversión por trabajador
-    const dep = (k) => (n + g + d) * k; // Depreciación efectiva por trabajador
-    // Generar datos para el gráfico
-    let kValues = Array.from({ length: 100 }, (_, i) => i);
-    let yValues = kValues.map((k) => y(k));
-    let iValues = kValues.map((k) => i(k));
-    let depValues = kValues.map((k) => dep(k));
-    let ctx = document.getElementById("myChart").getContext("2d");
-    chart = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: kValues,
-            datasets: [
-                {
-                    label: "Output por trabajador ($y = k^α$)",
-                    data: yValues,
-                    borderColor: "blue",
-                    fill: false,
-                },
-                {
-                    label: "Inversión por trabajador ($s cdot y$)",
-                    data: iValues,
-                    borderColor: "green",
-                    fill: false,
-                },
-                {
-                    label: "Depreciación efectiva por trabajador ($[n + g + d] cdot k$)",
-                    data: depValues,
-                    borderColor: "red",
-                    borderDash: [5, 5],
-                    fill: false,
-                },
-            ],
-        },
-        options: {
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: "Capital por trabajador ($k$)",
-                    },
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: "Output, Inversión y Depreciación por trabajador",
-                    },
-                },
-            },
-        },
-    });
-});
+onMounted(async () => {
 
-// Función para iniciar la simulación
-const iniciarSimulacion = async () => {
+    const proyecto = window.localStorage.getItem('proyecto');
     const params = {
-        tasaAhorro: (tasaAhorro.value) / 100,
-        tasaDepreciacionCapital: (tasaDepreciacionCapital.value) / 100,
-        tasaCrecimientoPoblacional: (tasaCrecimientoPoblacional.value) / 100,
-        tasaProgresoTecnologico: (tasaProgresoTecnologico.value) / 100,
-        coeficienteElasticidad: coeficienteElasticidad.value
+        proyecto: proyecto,
     };
     const queryString = new URLSearchParams(params).toString();
-    const url = `http://localhost:3000/Simulador/calc?${queryString}`;
+    const url = `http://localhost:3000/Simulador/getsimulacion?${queryString}`;
+
 
     try {
         const res = await fetch(url, {
-            method: 'POST', // Aunque se está usando POST, los datos se envían en la URL.
+            method: 'GET',
         });
         const data = await res.json();
-        const { respuesta } = data;
-        const { depValues, iValues, kValues, yValues } = respuesta;
+        const { Simulacion } = data;
+        const { depValues, iValues, kValues, yValues, } = Simulacion[0];
+        let tasaAhorro2 = Simulacion[0].tasaAhorro;
+        let tasaCrecimientoPoblacional2 = Simulacion[0].tasaCrecimientoPoblacional;
+        let tasaDepreciacion = Simulacion[0].tasaDepreciacion;
+        let tasaProgresoTecnologico2 = Simulacion[0].tasaProgresoTecnologico;
+        let coeficienteElasticidad2 = Simulacion[0].coeficienteElasticidad;
 
-        simulacionGuardar = [depValues, iValues, kValues, yValues]
-        console.log(simulacionGuardar)
-        
+        tasaAhorro.value = tasaAhorro2;
+        tasaCrecimientoPoblacional.value = tasaCrecimientoPoblacional2;
+        tasaDepreciacionCapital.value = tasaDepreciacion;
+        tasaProgresoTecnologico.value = tasaProgresoTecnologico2;
+        coeficienteElasticidad.value = coeficienteElasticidad2;
         
 
-        if (chart) {
-            chart.destroy();
-        }
-        //Ocultar el primer gráfico
-        document.getElementById("myChart").style.display = "none";
-        document.getElementById("myChart2").style.display = "block";
-        let ctx = document.getElementById("myChart2").getContext("2d"); 
+
+        const depValuesTranformed = depValues.map((value) => {
+            let number = parseFloat(value.$numberDecimal);
+        
+            return number;
+
+        })
+
+        const iValuesTranformed = iValues.map((value) => {
+            let number = parseFloat(value.$numberDecimal);
+        
+            return number;
+        })
+
+        const kValuesTranformed = kValues.map((value) => {
+            let number = parseFloat(value.$numberDecimal);
+        
+            return number;
+        })
+
+        const yValuesTranformed = yValues.map((value) => {
+            let number = parseFloat(value.$numberDecimal);
+        
+            return number;
+        })
+
+        let ctx = document.getElementById("myChart").getContext("2d");
         chart = new Chart(ctx, {
             type: "line",
             data: {
-                labels: kValues,
+                labels: kValuesTranformed,
                 datasets: [
                     {
                         label: "Output por trabajador ($y = k^α$)",
-                        data: yValues,
-                        borderColor: "orange",
+                        data: yValuesTranformed,
+                        borderColor: "blue",
                         fill: false,
                     },
                     {
                         label: "Inversión por trabajador ($s cdot y$)",
-                        data: iValues,
-                        borderColor: "purple",
+                        data: iValuesTranformed,
+                        borderColor: "green",
                         fill: false,
                     },
                     {
                         label: "Depreciación efectiva por trabajador ($[n + g + d] cdot k$)",
-                        data: depValues,
-                        borderColor: "brown",
+                        data: depValuesTranformed,
+                        borderColor: "red",
                         borderDash: [5, 5],
                         fill: false,
                     },
@@ -238,62 +202,23 @@ const iniciarSimulacion = async () => {
                 },
             },
         });
-        document.getElementById("label1").classList.remove('success')
-        document.getElementById("label2").classList.remove('info')
-        document.getElementById("label3").classList.remove('warning')
 
-        document.getElementById("label1").classList.add('success2')
-        document.getElementById("label2").classList.add('info2')
-        document.getElementById("label3").classList.add('warning2')
-        
-        
-        document.getElementById('guardar').style.display = 'block'
 
-        
+
 
 
 
     } catch (error) {
-        console.error(error);
-    }
-}
+        console.log(error);
 
-const guardarSimulacion = async () => {
-    console.log(simulacionGuardar)
-
-    const params = {
-        kValues: simulacionGuardar[2],   
-        yValues: simulacionGuardar[3] ,
-        iValues: simulacionGuardar[1]  , 
-        depValues: simulacionGuardar[0],
-        tasaAhorro: tasaAhorro.value,
-        tasaDepreciacionCapital: tasaDepreciacionCapital.value,
-        tasaCrecimientoPoblacional: tasaCrecimientoPoblacional.value,
-        tasaProgresoTecnologico: tasaProgresoTecnologico.value,
-        coeficienteElasticidad: coeficienteElasticidad.value
-
-    };
-    const queryString = new URLSearchParams(params).toString();
-    const url = `http://localhost:3000/Simulador/savesimulacion?${queryString}`;
-
-    try {
-        const res = await fetch(url, {
-            method: 'POST', // Aunque se está usando POST, los datos se envían en la URL.
-        });
-
-        if (res.status == 200) {
-            alert('Se ha guardardado correctamente la simulación')
-            window.location.href = `${process.env.PATH}`;
-            
-        }
-        
-
-
-    } catch (error) {
-        console.log(error)
     }
 
-}
+
+
+
+
+});
+
 
 </script>
 
@@ -349,16 +274,39 @@ const guardarSimulacion = async () => {
 }
 
 .label {
-  color: white;
-  padding: 8px;
+    color: white;
+    padding: 8px;
 }
 
-.success {background-color: blue} /* Green */
-.info {background-color: green} /* Blue */
-.warning {background-color: red} /* Orange */
+.success {
+    background-color: blue
+}
 
-.success2 {background-color: orange} /* Green */
-.info2 {background-color: purple} /* Blue */
-.warning2 {background-color: brown} /* Orange */
+/* Green */
+.info {
+    background-color: green
+}
 
+/* Blue */
+.warning {
+    background-color: red
+}
+
+/* Orange */
+
+.success2 {
+    background-color: orange
+}
+
+/* Green */
+.info2 {
+    background-color: purple
+}
+
+/* Blue */
+.warning2 {
+    background-color: brown
+}
+
+/* Orange */
 </style>

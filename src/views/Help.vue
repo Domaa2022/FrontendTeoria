@@ -35,9 +35,23 @@
                     <v-btn height="70" width="300" color="#80A1C1" dark>Entradas Esperadas
                     </v-btn></router-link>
 
+                <a href="https://www.youtube.com/watch?v=NrX-NFk-at4" target="_blank" style="margin-right: 100px;">
+                    <v-btn height="70" width="300" color="#80A1C1" dark> Video Explicativo
+
+                    </v-btn>
+                </a>
+
+                <a href="https://nulan.mdp.edu.ar/id/eprint/1854/1/01466.pdf" target="_blank" style="margin-right: 100px;">
+                    <v-btn height="70" width="300" color="#80A1C1" dark> Documento Explicativo
+
+                    </v-btn>
+                </a>
+
                 <router-link to="/">
                     <v-btn height="70" width="300" color="#80A1C1" dark> Cancelar
-                    </v-btn></router-link>
+                </v-btn></router-link>
+
+                
 
             </v-container>
 
