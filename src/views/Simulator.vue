@@ -49,15 +49,16 @@
 
                 <v-container>
                     <v-row>
-                        <v-col cols="6" id='Buttons'>
-                            <v-btn height="70" width="500" color="#80A1C1" dark @click="iniciarSimulacion()">INICIAR
-                            </v-btn>
-
+                        <v-col cols="4" id='Buttons'>
+                            <v-btn id="iniciar" height="70" width="500" color="#80A1C1" dark @click="iniciarSimulacion()">INICIAR</v-btn>   
                         </v-col>
-                        <v-col cols="6" id='Buttons'>
+                        <v-col cols="4" id='Buttons'>
                             <router-link to="/">
                                 <v-btn height="70" width="500" color="#80A1C1" dark>
                                     CANCELAR</v-btn></router-link>
+                        </v-col>
+                        <v-col cols="4" id="Buttons">
+                            <v-btn id="guardar" style="display: none;" height="70" width="500" color="#80A1C1" dark @click="guardarSimulacion()">GUARDAR </v-btn>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -65,9 +66,18 @@
 
             </v-container>
 
-            <v-container class="flex-center" style="display: flex;justify-content: center; align-items: center;">
-                <canvas style="display: block;" height="400" width="400" id="myChart"></canvas>
-                <canvas style="display: none;" height="400" width="400" id="myChart2"></canvas>
+            <v-container >
+                <v-container style="display: flex ; justify-content: space-evenly;">
+                    <span id="label1" class="label success">Output por trabajador</span>
+                    <span id="label2"class="label info">Inversión por trabajador</span>
+                    <span id="label3" class="label warning">Depreciación efectiva por trabajador</span>
+                </v-container>
+                
+                <v-container class="flex-center" style="display: flex;justify-content: center; align-items: center;">
+                    <canvas style="display: block;" height="400" width="400" id="myChart"></canvas>
+                    <canvas style="display: none;" height="400" width="400" id="myChart2"></canvas>
+                </v-container>
+
             </v-container>
 
         </v-main>
@@ -87,6 +97,8 @@ const d = 0.1; // tasa de depreciación
 const n = 0.2; // crecimiento de la población
 const g = 0.05; // progreso tecnológico
 const alpha = 0.5; // elasticidad de la producción respecto al capital
+
+let simulacionGuardar = ref([]);
 
 // Variables reactivas
 let tasaAhorro = ref(null);
@@ -170,13 +182,19 @@ const iniciarSimulacion = async () => {
         const data = await res.json();
         const { respuesta } = data;
         const { depValues, iValues, kValues, yValues } = respuesta;
+
+        simulacionGuardar = [depValues, iValues, kValues, yValues]
+        console.log(simulacionGuardar)
+        
+        
+
         if (chart) {
             chart.destroy();
         }
         //Ocultar el primer gráfico
         document.getElementById("myChart").style.display = "none";
         document.getElementById("myChart2").style.display = "block";
-        let ctx = document.getElementById("myChart2").getContext("2d"); 7
+        let ctx = document.getElementById("myChart2").getContext("2d"); 
         chart = new Chart(ctx, {
             type: "line",
             data: {
@@ -220,6 +238,18 @@ const iniciarSimulacion = async () => {
                 },
             },
         });
+        document.getElementById("label1").classList.remove('success')
+        document.getElementById("label2").classList.remove('info')
+        document.getElementById("label3").classList.remove('warning')
+
+        document.getElementById("label1").classList.add('success2')
+        document.getElementById("label2").classList.add('info2')
+        document.getElementById("label3").classList.add('warning2')
+        
+        
+        document.getElementById('guardar').style.display = 'block'
+
+        
 
 
 
@@ -228,6 +258,36 @@ const iniciarSimulacion = async () => {
     }
 }
 
+const guardarSimulacion = async () => {
+    console.log(simulacionGuardar)
+
+    const params = {
+        kValues: simulacionGuardar[2],   
+        yValues: simulacionGuardar[3] ,
+        iValues: simulacionGuardar[1]  , 
+        depValues: simulacionGuardar[0]
+    };
+    const queryString = new URLSearchParams(params).toString();
+    const url = `http://localhost:3000/Simulador/savesimulacion?${queryString}`;
+
+    try {
+        const res = await fetch(url, {
+            method: 'POST', // Aunque se está usando POST, los datos se envían en la URL.
+        });
+
+        if (res.status == 200) {
+            alert('Se ha guardardado correctamente la simulación')
+            window.location.href = 'http://localhost:8081/';
+            
+        }
+        
+
+
+    } catch (error) {
+        console.log(error)
+    }
+
+}
 
 </script>
 
@@ -281,4 +341,18 @@ const iniciarSimulacion = async () => {
     flex-direction: column;
     justify-content: center;
 }
+
+.label {
+  color: white;
+  padding: 8px;
+}
+
+.success {background-color: blue} /* Green */
+.info {background-color: green} /* Blue */
+.warning {background-color: red} /* Orange */
+
+.success2 {background-color: orange} /* Green */
+.info2 {background-color: purple} /* Blue */
+.warning2 {background-color: yellow} /* Orange */
+
 </style>
